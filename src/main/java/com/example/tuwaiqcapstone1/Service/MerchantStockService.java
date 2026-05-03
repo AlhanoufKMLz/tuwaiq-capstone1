@@ -60,13 +60,12 @@ public class MerchantStockService {
     public boolean addStock(String productId, String merchantId, int amount){
         if (amount <= 0)
             return false;
-        for(MerchantStock m: merchantStocks){
-            if(m.getProductId().equalsIgnoreCase(productId) && m.getMerchantId().equalsIgnoreCase(merchantId)){
-                m.setStock(m.getStock() + amount);
-                return true;
-            }
-        }
-        return false;
+
+        int index = findByProductAndMerchantId(productId, merchantId);
+        if(index == -1)
+            return false;
+        merchantStocks.get(index).setStock(merchantStocks.get(index).getStock() + amount);
+        return true;
     }
 
 
@@ -75,6 +74,14 @@ public class MerchantStockService {
         for(int i = 0; i < merchantStocks.size(); i++)
             if(merchantStocks.get(i).getId().equalsIgnoreCase(id))
                 return i;
+        return -1;
+    }
+
+    public int findByProductAndMerchantId(String productId, String merchantId){
+        for(int i = 0; i < merchantStocks.size(); i++){
+            if(merchantStocks.get(i).getProductId().equalsIgnoreCase(productId) && merchantStocks.get(i).getMerchantId().equalsIgnoreCase(merchantId))
+                return i;
+        }
         return -1;
     }
 }

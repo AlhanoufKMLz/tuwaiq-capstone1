@@ -1,12 +1,19 @@
 package com.example.tuwaiqcapstone1.Service;
 
+import com.example.tuwaiqcapstone1.Model.MerchantStock;
 import com.example.tuwaiqcapstone1.Model.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+
+    private final ProductService productService;
+    private final MerchantService merchantService;
+    private final MerchantStockService merchantStockService;
 
     ArrayList<User> users = new ArrayList<>();
 
@@ -40,6 +47,29 @@ public class UserService {
         return true;
     }
 
+
+    //EXTRA ENDPOINTS
+    public int buyProduct(String userId, String productId, String merchantId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1; //check user
+        int productIndex = productService.findProductIndex(productId);
+        if(productIndex == -1) return 0; //check product
+        int merchantIndex = merchantService.findMerchantIndex(merchantId);
+        if(merchantIndex == -1) return 1; //check merchant
+        int merchantStockIndex = merchantStockService.findByProductAndMerchantId(productId, merchantId);
+        if(merchantStockIndex == -1) return 2; //check merchant stock
+
+        int stock = merchantStockService.merchantStocks.get(merchantStockIndex).getStock();
+        if(stock < 1) return 3; //check stock
+
+        double userBalance = users.get(userIndex).getBalance();
+        double productPrice = productService.products.get(productIndex).getPrice();
+        if(userBalance < productPrice) return 4; //check balance
+
+        users.get(userIndex).setBalance(userBalance - productPrice);
+        merchantStockService.merchantStocks.get(merchantStockIndex).setStock(stock-1);
+        return 6;//everything is good
+    }
 
     //HELPER METHODS
     public int findUserIndex(String id){
