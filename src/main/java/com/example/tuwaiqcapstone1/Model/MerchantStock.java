@@ -2,7 +2,11 @@ package com.example.tuwaiqcapstone1.Model;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
+@Data
+@AllArgsConstructor
 public class MerchantStock {
 
     @NotEmpty(message = "ID must not be empty")
