@@ -51,18 +51,24 @@ public class UserService {
     //EXTRA ENDPOINTS
     public int buyProduct(String userId, String productId, String merchantId){
         int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1; //check user
         int productIndex = productService.findProductIndex(productId);
+        if(productIndex == -1) return 0; //check product
         int merchantIndex = merchantService.findMerchantIndex(merchantId);
-        if(userIndex == -1) return -1;
-        if(productIndex == -1) return 0;
-        if(merchantIndex == -1) return 1;
+        if(merchantIndex == -1) return 1; //check merchant
+        int merchantStockIndex = merchantStockService.findByProductAndMerchantId(productId, merchantId);
+        if(merchantStockIndex == -1) return 2; //check merchant stock
+
+        int stock = merchantStockService.merchantStocks.get(merchantStockIndex).getStock();
+        if(stock < 1) return 3; //check stock
 
         double userBalance = users.get(userIndex).getBalance();
         double productPrice = productService.products.get(productIndex).getPrice();
-        if(userBalance < productPrice) return 2; //insufficient balance
+        if(userBalance < productPrice) return 4; //check balance
 
         users.get(userIndex).setBalance(userBalance - productPrice);
-        return 6;
+        merchantStockService.merchantStocks.get(merchantStockIndex).setStock(stock-1);
+        return 6;//everything is good
     }
 
     //HELPER METHODS
