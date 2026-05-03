@@ -57,6 +57,18 @@ public class MerchantStockService {
         return true;
     }
 
+    public boolean addStock(String productId, String merchantId, int amount){
+        if (amount <= 0)
+            return false;
+        for(MerchantStock m: merchantStocks){
+            if(m.getProductId().equalsIgnoreCase(productId) && m.getMerchantId().equalsIgnoreCase(merchantId)){
+                m.setStock(m.getStock() + amount);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     //HELPER METHODS
     public int findMerchantStockIndex(String id){
