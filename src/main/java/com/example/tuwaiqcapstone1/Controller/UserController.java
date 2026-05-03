@@ -53,4 +53,19 @@ public class UserController {
             return ResponseEntity.status(200).body(new ApiResponse("User deleted successfully"));
         return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + id + " found"));
     }
+
+    //EXTRA ENDPOINTS
+    public ResponseEntity<?> buyProduct(@PathVariable String userId, @PathVariable String productId, @PathVariable String merchantId){
+        int result = userService.buyProduct(userId, productId, merchantId);
+        if(result == -1)
+            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+        if(result == 0)
+            return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found"));
+        if(result == 1)
+            return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + merchantId + " found"));
+        if(result == 2)
+            return ResponseEntity.status(400).body(new ApiResponse("Insufficient balance"));
+
+        return ResponseEntity.status(200).body(new ApiResponse("Product purchased successfully"));
+    }
 }

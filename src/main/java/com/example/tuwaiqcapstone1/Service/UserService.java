@@ -1,12 +1,19 @@
 package com.example.tuwaiqcapstone1.Service;
 
+import com.example.tuwaiqcapstone1.Model.MerchantStock;
 import com.example.tuwaiqcapstone1.Model.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+
+    private final ProductService productService;
+    private final MerchantService merchantService;
+    private final MerchantStockService merchantStockService;
 
     ArrayList<User> users = new ArrayList<>();
 
@@ -40,6 +47,23 @@ public class UserService {
         return true;
     }
 
+
+    //EXTRA ENDPOINTS
+    public int buyProduct(String userId, String productId, String merchantId){
+        int userIndex = findUserIndex(userId);
+        int productIndex = productService.findProductIndex(productId);
+        int merchantIndex = merchantService.findMerchantIndex(merchantId);
+        if(userIndex == -1) return -1;
+        if(productIndex == -1) return 0;
+        if(merchantIndex == -1) return 1;
+
+        double userBalance = users.get(userIndex).getBalance();
+        double productPrice = productService.products.get(productIndex).getPrice();
+        if(userBalance < productPrice) return 2; //insufficient balance
+
+        users.get(userIndex).setBalance(userBalance - productPrice);
+        return 6;
+    }
 
     //HELPER METHODS
     public int findUserIndex(String id){
