@@ -61,4 +61,15 @@ public class MerchantStockController {
             return ResponseEntity.status(200).body(new ApiResponse("Merchant Stock deleted successfully"));
         return ResponseEntity.status(404).body(new ApiResponse("No merchant stock with ID: " + id + " found"));
     }
+
+
+    //EXTRA ENDPOINTS
+    @PutMapping("/add-stock/{productId}/{merchantId}/{amount}")
+    public ResponseEntity<?> addStock(@PathVariable String productId, @PathVariable String merchantId, @PathVariable int amount){
+        boolean isDone = merchantStockService.addStock(productId, merchantId, amount);
+        if(isDone)
+            return ResponseEntity.status(200).body(new ApiResponse("Stock added successfully"));
+        return ResponseEntity.status(404).body(new ApiResponse("No merchant stock with product id: " + productId + " and merchant id: " + merchantId + " found"));
+    }
+
 }
