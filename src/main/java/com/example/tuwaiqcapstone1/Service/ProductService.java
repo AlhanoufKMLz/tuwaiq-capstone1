@@ -46,6 +46,8 @@ public class ProductService {
         return true;
     }
 
+
+    //EXTRA ENDPOINTS
     public Product searchByName(String name){
         for(Product p: products){
             if(p.getName().equalsIgnoreCase(name))
@@ -81,6 +83,17 @@ public class ProductService {
         return sortedProducts;
     }
 
+    public Product getBestSeller() {
+        if (products.isEmpty())
+            return null;
+
+        Product bestSeller = products.get(0);
+        for (Product p : products)
+            if (p.getTimesPurchased() > bestSeller.getTimesPurchased())
+                bestSeller = p;
+        return bestSeller;
+    }
+
 
     //HELPER METHODS
     public int findProductIndex(String id){
@@ -89,4 +102,5 @@ public class ProductService {
                 return i;
         return -1;
     }
+
 }
