@@ -21,4 +21,6 @@ public class Product {
 
     @NotEmpty(message = "Category ID must not be empty")
     private String categoryId;
+
+    private int timesPurchased;
 }
