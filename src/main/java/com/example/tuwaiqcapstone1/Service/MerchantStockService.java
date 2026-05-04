@@ -1,6 +1,5 @@
 package com.example.tuwaiqcapstone1.Service;
 
-import com.example.tuwaiqcapstone1.Model.Category;
 import com.example.tuwaiqcapstone1.Model.MerchantStock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -66,6 +65,14 @@ public class MerchantStockService {
             return false;
         merchantStocks.get(index).setStock(merchantStocks.get(index).getStock() + amount);
         return true;
+    }
+
+    public int clearMerchantStock(String merchantId){
+        if(merchantService.findMerchantIndex(merchantId) == -1)
+            return -1;
+        boolean removed = merchantStocks.removeIf(m ->
+                m.getMerchantId().equalsIgnoreCase(merchantId));
+        return removed ? 1 : 0;
     }
 
 
