@@ -68,4 +68,12 @@ public class ProductController {
         return ResponseEntity.status(200).body(categoryProducts);
     }
 
+    @GetMapping("/get-price-range/{min}/{max}")
+    public ResponseEntity<?> getProductsByPriceRange(@PathVariable double min, @PathVariable double max){
+        ArrayList<Product> productsInRange = productService.getProductsByPriceRange(min, max);
+        if(productsInRange.isEmpty())
+            return ResponseEntity.status(200).body(new ApiResponse("No products with price in the range: (" + min + ", " + max + ")"));
+        return ResponseEntity.status(200).body(productsInRange);
+    }
+
 }
