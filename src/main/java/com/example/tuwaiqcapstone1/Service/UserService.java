@@ -1,6 +1,7 @@
 package com.example.tuwaiqcapstone1.Service;
 
 import com.example.tuwaiqcapstone1.Model.MerchantStock;
+import com.example.tuwaiqcapstone1.Model.Product;
 import com.example.tuwaiqcapstone1.Model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,29 @@ public class UserService {
         users.get(userIndex).setBalance(userBalance - productPrice);
         merchantStockService.merchantStocks.get(merchantStockIndex).setStock(stock-1);
         return 6;//everything is good
+    }
+
+    public ArrayList<Product> showCart(String userId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return null;
+
+        ArrayList<Product> cartProducts = new ArrayList<>();
+        User user = users.get(userIndex);
+        for(String productId: user.getCart()){
+            int productIndex = productService.findProductIndex(productId);
+            Product product = productService.products.get(productIndex);
+            cartProducts.add(product);
+        }
+        return cartProducts;
+    }
+
+    public int addToCart(String userId, String productId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1;
+        if(productService.findProductIndex(productId) == -1) return 0;
+
+        users.get(userIndex).getCart().add(productId);
+        return 1;
     }
 
     //HELPER METHODS
