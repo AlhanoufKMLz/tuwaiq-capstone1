@@ -1,15 +1,16 @@
 package com.example.tuwaiqcapstone1.Controller;
 
 import com.example.tuwaiqcapstone1.ApiResponse.ApiResponse;
-import com.example.tuwaiqcapstone1.Model.Category;
+import com.example.tuwaiqcapstone1.Model.Product;
 import com.example.tuwaiqcapstone1.Model.User;
-import com.example.tuwaiqcapstone1.Service.CategoryService;
 import com.example.tuwaiqcapstone1.Service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -72,5 +73,25 @@ public class UserController {
             return ResponseEntity.status(400).body(new ApiResponse("Insufficient balance"));
 
         return ResponseEntity.status(200).body(new ApiResponse("Product purchased successfully"));
+    }
+
+    @GetMapping("/get-cart/{userId}")
+    public ResponseEntity<?> showCart(@PathVariable String userId){
+        ArrayList<Product> cartProducts = userService.showCart(userId);
+        if(cartProducts == null)
+            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+        if(cartProducts.isEmpty())
+            return ResponseEntity.status(200).body(new ApiResponse("There is no products in the cart yet"));
+        return ResponseEntity.status(200).body(cartProducts);
+    }
+
+    @PutMapping("/add-to-cart/{userId}/{productId}")
+    public ResponseEntity<?> addToCart(@PathVariable String userId, @PathVariable String productId){
+        int result = userService.addToCart(userId, productId);
+        if(result == -1)
+            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+        if(result == 0)
+            return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found"));
+        return ResponseEntity.status(200).body(new ApiResponse("Product added to the cart successfully"));
     }
 }
