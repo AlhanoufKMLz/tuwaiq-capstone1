@@ -69,6 +69,8 @@ public class UserService {
 
         users.get(userIndex).setBalance(userBalance - productPrice);
         merchantStockService.merchantStocks.get(merchantStockIndex).setStock(stock-1);
+        int timesPurchased = productService.products.get(productIndex).getTimesPurchased();
+        productService.products.get(productIndex).setTimesPurchased(timesPurchased+1);
         return 6;//everything is good
     }
 
