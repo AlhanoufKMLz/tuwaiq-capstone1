@@ -35,4 +35,7 @@ public class User {
     private double balance;
 
     private ArrayList<String> cart;
+
+    @PositiveOrZero(message = "Total Spent must be zero or positive number")
+    private double totalSpent;
 }

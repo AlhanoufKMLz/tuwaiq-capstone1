@@ -94,4 +94,14 @@ public class UserController {
             return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found"));
         return ResponseEntity.status(200).body(new ApiResponse("Product added to the cart successfully"));
     }
+
+    @PutMapping("/claim-reward/{userId}")
+    public ResponseEntity<?> claimReward(@PathVariable String userId){
+        int result = userService.claimReward(userId);
+        if(result == -1)
+            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+        if(result == 0)
+            return ResponseEntity.status(400).body(new ApiResponse("Total spent must be at least 1000 to claim reward"));
+        return ResponseEntity.status(200).body(new ApiResponse("Reward claimed successfully"));
+    }
 }
