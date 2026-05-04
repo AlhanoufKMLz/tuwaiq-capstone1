@@ -46,6 +46,41 @@ public class ProductService {
         return true;
     }
 
+    public Product searchByName(String name){
+        for(Product p: products){
+            if(p.getName().equalsIgnoreCase(name))
+                return p;
+        }
+        return null;
+    }
+
+    public ArrayList<Product> getProductsByCategory(String categoryId){
+        if(categoryService.findCategoryIndex(categoryId) == -1)
+            return null;
+
+        ArrayList<Product> categoryProducts = new ArrayList<>();
+        for(Product p: products){
+            if(p.getCategoryId().equalsIgnoreCase(categoryId))
+                categoryProducts.add(p);
+        }
+        return categoryProducts;
+    }
+
+    public ArrayList<Product> getProductsByPriceRange(double min, double max){
+        ArrayList<Product> productsInRange = new ArrayList<>();
+        for(Product p: products){
+            if(p.getPrice() >= min && p.getPrice() <= max)
+                productsInRange.add(p);
+        }
+        return productsInRange;
+    }
+
+    public ArrayList<Product> sortByPrice(){
+        ArrayList<Product> sortedProducts = new ArrayList<>(products);
+        sortedProducts.sort((p1, p2) -> (int) (p1.getPrice() - p2.getPrice()));
+        return sortedProducts;
+    }
+
 
     //HELPER METHODS
     public int findProductIndex(String id){
