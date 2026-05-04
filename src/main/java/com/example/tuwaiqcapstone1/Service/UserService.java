@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -94,7 +95,7 @@ public class UserService {
 
         ArrayList<Product> cartProducts = new ArrayList<>();
         User user = users.get(userIndex);
-        for(String productId: user.getCart()){
+        for(String productId: user.getCart().keySet()){
             int productIndex = productService.findProductIndex(productId);
             Product product = productService.products.get(productIndex);
             cartProducts.add(product);
@@ -102,13 +103,16 @@ public class UserService {
         return cartProducts;
     }
 
-    public int addToCart(String userId, String productId){
+    public int addToCart(String userId, String productId, String merchantId){
         int userIndex = findUserIndex(userId);
-        if(userIndex == -1) return -1;
-        if(productService.findProductIndex(productId) == -1) return 0;
+        if(userIndex == -1) return -1; //check user
+        int productIndex = productService.findProductIndex(productId);
+        if(productIndex == -1) return 0; //check product
+        int merchantIndex = merchantService.findMerchantIndex(merchantId);
+        if(merchantIndex == -1) return 1; //check merchant
 
-        users.get(userIndex).getCart().add(productId);
-        return 1;
+        users.get(userIndex).getCart().put(productId, merchantId);
+        return 2;
     }
 
     public int claimReward(String userId){
@@ -119,6 +123,20 @@ public class UserService {
         if(user.getTotalSpent() == 0 || user.getTotalSpent() % 1000 != 0) return 0;
 
         user.setBalance(user.getBalance() + user.getBalance() * 0.1);
+        return 1;
+    }
+
+    public int checkout(String userId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1;
+
+        User user = users.get(userIndex);
+        if(user.getCart().isEmpty()) return 0;
+
+        for(Map.Entry<String, String> entry: user.getCart().entrySet()){
+            buyProduct(userId, entry.getKey(), entry.getValue());
+        }
+        user.getCart().clear();
         return 1;
     }
 

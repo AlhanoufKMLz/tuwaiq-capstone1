@@ -93,13 +93,15 @@ public class UserController {
         return ResponseEntity.status(200).body(cartProducts);
     }
 
-    @PutMapping("/add-to-cart/{userId}/{productId}")
-    public ResponseEntity<?> addToCart(@PathVariable String userId, @PathVariable String productId){
-        int result = userService.addToCart(userId, productId);
+    @PutMapping("/add-to-cart/{userId}/{productId}/{merchantId}")
+    public ResponseEntity<?> addToCart(@PathVariable String userId, @PathVariable String productId, @PathVariable String merchantId){
+        int result = userService.addToCart(userId, productId, merchantId);
         if(result == -1)
             return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
         if(result == 0)
             return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found"));
+        if(result == 1)
+            return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + merchantId + " found"));
         return ResponseEntity.status(200).body(new ApiResponse("Product added to the cart successfully"));
     }
 
@@ -111,5 +113,15 @@ public class UserController {
         if(result == 0)
             return ResponseEntity.status(400).body(new ApiResponse("Total spent must be at least 1000 to claim reward"));
         return ResponseEntity.status(200).body(new ApiResponse("Reward claimed successfully"));
+    }
+
+    @PutMapping("/checkout/{userId}")
+    public ResponseEntity<?> checkout(@PathVariable String userId){
+        int result = userService.checkout(userId);
+        if(result == -1)
+            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+        if(result == 0)
+            return ResponseEntity.status(400).body(new ApiResponse("User with ID: " + userId + " doesn't have products in the cart"));
+        return ResponseEntity.status(200).body(new ApiResponse("Checkout successfully"));
     }
 }
