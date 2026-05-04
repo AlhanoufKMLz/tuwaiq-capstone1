@@ -1,6 +1,7 @@
 package com.example.tuwaiqcapstone1.Controller;
 
 import com.example.tuwaiqcapstone1.ApiResponse.ApiResponse;
+import com.example.tuwaiqcapstone1.Model.Category;
 import com.example.tuwaiqcapstone1.Model.Product;
 import com.example.tuwaiqcapstone1.Service.ProductService;
 import jakarta.validation.Valid;
@@ -58,6 +59,14 @@ public class ProductController {
 
 
     //EXTRA ENDPOINTS
+    @GetMapping("/get-name/{name}")
+    public ResponseEntity<?> searchByName(@PathVariable String name){
+        Product product = productService.searchByName(name);
+        if(product == null)
+            return ResponseEntity.status(404).body(new ApiResponse("No product with name: " + name + " found"));
+        return ResponseEntity.status(200).body(product);
+    }
+
     @GetMapping("/get-category/{categoryId}")
     public ResponseEntity<?> getProductsByCategory(@PathVariable String categoryId){
         ArrayList<Product> categoryProducts = productService.getProductsByCategory(categoryId);
@@ -74,6 +83,12 @@ public class ProductController {
         if(productsInRange.isEmpty())
             return ResponseEntity.status(200).body(new ApiResponse("No products with price in the range: (" + min + ", " + max + ")"));
         return ResponseEntity.status(200).body(productsInRange);
+    }
+
+    @GetMapping("/get-sorted")
+    public ResponseEntity<?> sortByPrice(){
+        ArrayList<Product> sortedProducts = productService.sortByPrice();
+        return ResponseEntity.status(200).body(sortedProducts);
     }
 
 }
