@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/api/v1/product")
 @RequiredArgsConstructor
@@ -53,4 +55,17 @@ public class ProductController {
             return ResponseEntity.status(200).body(new ApiResponse("Product deleted successfully"));
         return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + id + " found"));
     }
+
+
+    //EXTRA ENDPOINTS
+    @GetMapping("/get-category/{categoryId}")
+    public ResponseEntity<?> getProductsByCategory(@PathVariable String categoryId){
+        ArrayList<Product> categoryProducts = productService.getProductsByCategory(categoryId);
+        if(categoryProducts == null)
+            return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + categoryId + " found"));
+        if(categoryProducts.isEmpty())
+            return ResponseEntity.status(400).body(new ApiResponse("Category with ID: " + categoryId + " doesn't have any products yet"));
+        return ResponseEntity.status(200).body(categoryProducts);
+    }
+
 }
