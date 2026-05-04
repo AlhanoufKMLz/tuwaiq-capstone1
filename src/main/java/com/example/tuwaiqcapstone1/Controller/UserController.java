@@ -75,6 +75,14 @@ public class UserController {
         return ResponseEntity.status(200).body(new ApiResponse("Product purchased successfully"));
     }
 
+    @GetMapping("/get-username")
+    public ResponseEntity<?> searchByUsername(@PathVariable String username){
+        User user = userService.searchByUsername(username);
+        if(user == null)
+            return ResponseEntity.status(404).body(new ApiResponse("No user with username: " + username + " found"));
+        return ResponseEntity.status(200).body(user);
+    }
+
     @GetMapping("/get-cart/{userId}")
     public ResponseEntity<?> showCart(@PathVariable String userId){
         ArrayList<Product> cartProducts = userService.showCart(userId);

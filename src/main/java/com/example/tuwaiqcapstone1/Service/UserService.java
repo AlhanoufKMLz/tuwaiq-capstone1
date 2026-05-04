@@ -80,6 +80,14 @@ public class UserService {
         return 6;//everything is good
     }
 
+    public User searchByUsername(String username){
+        for(User u: users){
+            if(u.getUsername().equalsIgnoreCase(username))
+                return u;
+        }
+        return null;
+    }
+
     public ArrayList<Product> showCart(String userId){
         int userIndex = findUserIndex(userId);
         if(userIndex == -1) return null;
