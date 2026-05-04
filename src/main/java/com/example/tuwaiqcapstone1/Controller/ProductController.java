@@ -85,4 +85,10 @@ public class ProductController {
         return ResponseEntity.status(200).body(productsInRange);
     }
 
+    @GetMapping("/get-sorted")
+    public ResponseEntity<?> sortByPrice(){
+        ArrayList<Product> sortedProducts = productService.sortByPrice();
+        return ResponseEntity.status(200).body(sortedProducts);
+    }
+
 }

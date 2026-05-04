@@ -75,6 +75,12 @@ public class ProductService {
         return productsInRange;
     }
 
+    public ArrayList<Product> sortByPrice(){
+        ArrayList<Product> sortedProducts = new ArrayList<>(products);
+        sortedProducts.sort((p1, p2) -> (int) (p1.getPrice() - p2.getPrice()));
+        return sortedProducts;
+    }
+
 
     //HELPER METHODS
     public int findProductIndex(String id){
