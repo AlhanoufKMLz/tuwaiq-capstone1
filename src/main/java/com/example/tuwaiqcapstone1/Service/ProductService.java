@@ -58,6 +58,15 @@ public class ProductService {
         return categoryProducts;
     }
 
+    public ArrayList<Product> getProductsByPriceRange(double min, double max){
+        ArrayList<Product> productsInRange = new ArrayList<>();
+        for(Product p: products){
+            if(p.getPrice() >= min && p.getPrice() <= max)
+                productsInRange.add(p);
+        }
+        return productsInRange;
+    }
+
 
     //HELPER METHODS
     public int findProductIndex(String id){
