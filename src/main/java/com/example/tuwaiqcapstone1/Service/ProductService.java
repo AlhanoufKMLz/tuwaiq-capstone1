@@ -46,6 +46,14 @@ public class ProductService {
         return true;
     }
 
+    public Product searchByName(String name){
+        for(Product p: products){
+            if(p.getName().equalsIgnoreCase(name))
+                return p;
+        }
+        return null;
+    }
+
     public ArrayList<Product> getProductsByCategory(String categoryId){
         if(categoryService.findCategoryIndex(categoryId) == -1)
             return null;
