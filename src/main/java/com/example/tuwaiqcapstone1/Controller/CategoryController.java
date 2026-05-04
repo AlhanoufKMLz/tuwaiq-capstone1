@@ -51,4 +51,14 @@ public class CategoryController {
             return ResponseEntity.status(200).body(new ApiResponse("Category deleted successfully"));
         return ResponseEntity.status(400).body(new ApiResponse("No category with ID: " + id + " found"));
     }
+
+
+    //EXTRA ENDPOINTS
+    @GetMapping("/get-name/{name}")
+    public ResponseEntity<?> searchByName(@PathVariable String name){
+        Category category = categoryService.searchByName(name);
+        if(category == null)
+            return ResponseEntity.status(404).body(new ApiResponse("No category with name: " + name + " found"));
+        return ResponseEntity.status(200).body(category);
+    }
 }

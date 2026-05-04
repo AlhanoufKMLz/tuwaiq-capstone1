@@ -40,6 +40,14 @@ public class CategoryService {
         return true;
     }
 
+    public Category searchByName(String name){
+        for(Category c: categories){
+            if(c.getName().equalsIgnoreCase(name))
+                return c;
+        }
+        return null;
+    }
+
 
     //HELPER METHODS
     public int findCategoryIndex(String id){

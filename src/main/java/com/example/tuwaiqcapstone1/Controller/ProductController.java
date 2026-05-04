@@ -1,6 +1,7 @@
 package com.example.tuwaiqcapstone1.Controller;
 
 import com.example.tuwaiqcapstone1.ApiResponse.ApiResponse;
+import com.example.tuwaiqcapstone1.Model.Category;
 import com.example.tuwaiqcapstone1.Model.Product;
 import com.example.tuwaiqcapstone1.Service.ProductService;
 import jakarta.validation.Valid;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/v1/product")
@@ -53,4 +56,39 @@ public class ProductController {
             return ResponseEntity.status(200).body(new ApiResponse("Product deleted successfully"));
         return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + id + " found"));
     }
+
+
+    //EXTRA ENDPOINTS
+    @GetMapping("/get-name/{name}")
+    public ResponseEntity<?> searchByName(@PathVariable String name){
+        Product product = productService.searchByName(name);
+        if(product == null)
+            return ResponseEntity.status(404).body(new ApiResponse("No product with name: " + name + " found"));
+        return ResponseEntity.status(200).body(product);
+    }
+
+    @GetMapping("/get-category/{categoryId}")
+    public ResponseEntity<?> getProductsByCategory(@PathVariable String categoryId){
+        ArrayList<Product> categoryProducts = productService.getProductsByCategory(categoryId);
+        if(categoryProducts == null)
+            return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + categoryId + " found"));
+        if(categoryProducts.isEmpty())
+            return ResponseEntity.status(400).body(new ApiResponse("Category with ID: " + categoryId + " doesn't have any products yet"));
+        return ResponseEntity.status(200).body(categoryProducts);
+    }
+
+    @GetMapping("/get-price-range/{min}/{max}")
+    public ResponseEntity<?> getProductsByPriceRange(@PathVariable double min, @PathVariable double max){
+        ArrayList<Product> productsInRange = productService.getProductsByPriceRange(min, max);
+        if(productsInRange.isEmpty())
+            return ResponseEntity.status(200).body(new ApiResponse("No products with price in the range: (" + min + ", " + max + ")"));
+        return ResponseEntity.status(200).body(productsInRange);
+    }
+
+    @GetMapping("/get-sorted")
+    public ResponseEntity<?> sortByPrice(){
+        ArrayList<Product> sortedProducts = productService.sortByPrice();
+        return ResponseEntity.status(200).body(sortedProducts);
+    }
+
 }
