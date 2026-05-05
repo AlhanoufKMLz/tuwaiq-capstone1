@@ -3,8 +3,10 @@ package com.example.tuwaiqcapstone1.Service;
 import com.example.tuwaiqcapstone1.Model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityReturnValueHandler;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,8 @@ public class ProductService {
     }
 
     public int addProduct(Product product){
+        if(product.getTimesPurchased() != 0) return -2;
+
         if(findProductIndex(product.getId()) == -1) {//not found
             if(categoryService.findCategoryIndex(product.getCategoryId()) == -1) //not found
                 return 0;
@@ -29,13 +33,14 @@ public class ProductService {
         return -1;
     }
 
-    public boolean updateProduct(String id, Product product){
+    public int updateProduct(String id, Product product){
         int index = findProductIndex(id);
-        if(index == -1) //not found
-            return false;
+        if(index == -1) return -1; //not found
+        if (categoryService.findCategoryIndex(product.getCategoryId()) == -1) return 0;
+
         product.setId(id); //make sure the user doesn't change the id
         products.set(index, product);
-        return true;
+        return 1;
     }
 
     public boolean deleteProduct(String id){
@@ -83,9 +88,9 @@ public class ProductService {
         ArrayList<Product> sortedProducts = new ArrayList<>(products);
 
         if(order.equalsIgnoreCase("low-high"))
-            sortedProducts.sort((p1, p2) -> (int) (p1.getPrice() - p2.getPrice()));
+            sortedProducts.sort((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
          else
-            sortedProducts.sort((p1, p2) -> (int) (p2.getPrice() - p1.getPrice()));
+            sortedProducts.sort((p1, p2) -> Double.compare(p2.getPrice(), p1.getPrice()));
 
         return sortedProducts;
     }
