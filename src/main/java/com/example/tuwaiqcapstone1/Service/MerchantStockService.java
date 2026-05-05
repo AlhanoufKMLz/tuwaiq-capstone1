@@ -1,5 +1,6 @@
 package com.example.tuwaiqcapstone1.Service;
 
+import com.example.tuwaiqcapstone1.Model.Merchant;
 import com.example.tuwaiqcapstone1.Model.MerchantStock;
 import com.example.tuwaiqcapstone1.Model.Product;
 import lombok.RequiredArgsConstructor;
@@ -87,6 +88,19 @@ public class MerchantStockService {
             }
         }
         return merchantProducts;
+    }
+
+    public ArrayList<Merchant> getProductMerchants(String productId){
+        if(productService.findProductIndex(productId) == -1) return null;
+
+        ArrayList<Merchant> productMerchants = new ArrayList<>();
+        for(MerchantStock m: merchantStocks){
+            if(m.getProductId().equalsIgnoreCase(productId)){
+                int merchantId = merchantService.findMerchantIndex(m.getMerchantId());
+                productMerchants.add(merchantService.merchants.get(merchantId));
+            }
+        }
+        return productMerchants;
     }
 
 
