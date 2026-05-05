@@ -63,7 +63,7 @@ public class MerchantStockService {
     public int addStock(String productId, String merchantId, int amount){
         if(productService.findProductIndex(productId) == -1) return -1;
         if(merchantService.findMerchantIndex(merchantId) == -1) return -2;
-        if (amount < 0) return -3;
+        if (amount <= 0) return -3;
 
         int index = findByProductAndMerchantId(productId, merchantId);
         if(index == -1)
