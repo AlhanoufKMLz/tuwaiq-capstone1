@@ -1,7 +1,6 @@
 package com.example.tuwaiqcapstone1.Controller;
 
 import com.example.tuwaiqcapstone1.ApiResponse.ApiResponse;
-import com.example.tuwaiqcapstone1.Model.Category;
 import com.example.tuwaiqcapstone1.Model.Product;
 import com.example.tuwaiqcapstone1.Service.ProductService;
 import jakarta.validation.Valid;
@@ -31,11 +30,13 @@ public class ProductController {
             return ResponseEntity.status(400).body(new ApiResponse(errors.getFieldError().getDefaultMessage()));
 
         int result = productService.addProduct(product);
-        if(result == 1)
-            return ResponseEntity.status(200).body(new ApiResponse("Product added successfully"));
+        if(result == -1)
+            return ResponseEntity.status(400).body(new ApiResponse("ID: " + product.getId() + " already used"));
         if(result == 0)
-            return ResponseEntity.status(200).body(new ApiResponse("No category with ID: " + product.getCategoryId() + " found"));
-        return ResponseEntity.status(400).body(new ApiResponse("ID: " + product.getId() + " already used"));
+            return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + product.getCategoryId() + " found"));
+        if(result == -2)
+            return ResponseEntity.status(400).body(new ApiResponse("Times purchased must be 0"));
+        return ResponseEntity.status(200).body(new ApiResponse("Product added successfully"));
     }
 
     @PutMapping("/update/{id}")
@@ -43,10 +44,12 @@ public class ProductController {
         if(errors.hasErrors())
             return ResponseEntity.status(400).body(new ApiResponse(errors.getFieldError().getDefaultMessage()));
 
-        boolean isDone = productService.updateProduct(id, product);
-        if(isDone)
-            return ResponseEntity.status(200).body(new ApiResponse("Product updated successfully"));
-        return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + id + " found"));
+        int result = productService.updateProduct(id, product);
+        if(result == -1)
+            return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + id + " found"));
+        if(result == 0)
+            return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + product.getCategoryId() + " found"));
+        return ResponseEntity.status(200).body(new ApiResponse("Product updated successfully"));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -54,7 +57,7 @@ public class ProductController {
         boolean isDone = productService.deleteProduct(id);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("Product deleted successfully"));
-        return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + id + " found"));
+        return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + id + " found"));
     }
 
 
@@ -73,7 +76,7 @@ public class ProductController {
         if(categoryProducts == null)
             return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + categoryId + " found"));
         if(categoryProducts.isEmpty())
-            return ResponseEntity.status(400).body(new ApiResponse("Category with ID: " + categoryId + " doesn't have any products yet"));
+            return ResponseEntity.status(200).body(new ApiResponse("Category with ID: " + categoryId + " doesn't have any products yet"));
         return ResponseEntity.status(200).body(categoryProducts);
     }
 
