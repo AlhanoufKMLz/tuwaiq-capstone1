@@ -10,10 +10,10 @@ import lombok.Data;
 public class Merchant {
 
     @NotEmpty(message = "ID must not be empty")
+    @Size(min = 2, message = "ID must be at least 2 characters")
     private String id;
 
     @NotEmpty(message = "Name must not be empty")
     @Size(min = 4, message = "Name must be at least 4 characters")
     private String name;
-
 }
