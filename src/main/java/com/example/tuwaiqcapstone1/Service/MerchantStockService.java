@@ -110,8 +110,10 @@ public class MerchantStockService {
         ArrayList<Product> outOfStockProducts = new ArrayList<>();
         for(MerchantStock m: merchantStocks){
             if(m.getStock() == 0){
-                int productId = productService.findProductIndex(m.getProductId());
-                outOfStockProducts.add(productService.products.get(productId));
+                int index = productService.findProductIndex(m.getProductId());
+                Product product = productService.products.get(index);
+                if (!outOfStockProducts.contains(product))
+                    outOfStockProducts.add(product);
             }
         }
         return outOfStockProducts;
@@ -121,8 +123,10 @@ public class MerchantStockService {
         ArrayList<Product> inStockProducts = new ArrayList<>();
         for(MerchantStock m: merchantStocks){
             if(m.getStock() > 0){
-                int productId = productService.findProductIndex(m.getProductId());
-                inStockProducts.add(productService.products.get(productId));
+                int index = productService.findProductIndex(m.getProductId());
+                Product product = productService.products.get(index);
+                if (!inStockProducts.contains(product))
+                    inStockProducts.add(product);
             }
         }
         return inStockProducts;
