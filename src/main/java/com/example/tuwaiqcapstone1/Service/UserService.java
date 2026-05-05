@@ -144,7 +144,8 @@ public class UserService {
         User user = users.get(userIndex);
         if(user.getTotalSpent() == 0 || user.getTotalSpent() % 1000 != 0) return 0;
 
-        user.setBalance(user.getBalance() + user.getBalance() * 0.1);
+        user.setBalance(user.getBalance() + user.getTotalSpent() * 0.1);
+        user.setTotalSpent(0);
         return 1;
     }
 
