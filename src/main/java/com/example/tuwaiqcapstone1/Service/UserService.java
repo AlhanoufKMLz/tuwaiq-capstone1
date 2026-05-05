@@ -115,6 +115,28 @@ public class UserService {
         return 2;
     }
 
+    public int removeFromCart(String userId, String productId) {
+        int userIndex = findUserIndex(userId);
+        if (userIndex == -1) return -1;
+
+        User user = users.get(userIndex);
+        if (user.getCart().isEmpty()) return 0;
+
+        if (!user.getCart().containsKey(productId)) return 2;
+
+        user.getCart().remove(productId);
+        return 1;
+    }
+
+    public boolean clearCart(String userId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1)
+            return false;
+
+        users.get(userIndex).getCart().clear();
+        return true;
+    }
+
     public int claimReward(String userId){
         int userIndex = findUserIndex(userId);
         if(userIndex == -1) return -1;
@@ -122,7 +144,8 @@ public class UserService {
         User user = users.get(userIndex);
         if(user.getTotalSpent() == 0 || user.getTotalSpent() % 1000 != 0) return 0;
 
-        user.setBalance(user.getBalance() + user.getBalance() * 0.1);
+        user.setBalance(user.getBalance() + user.getTotalSpent() * 0.1);
+        user.setTotalSpent(0);
         return 1;
     }
 
@@ -138,6 +161,22 @@ public class UserService {
         }
         user.getCart().clear();
         return 1;
+    }
+
+    public double calculateCartCost(String userId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1;
+
+        User user = users.get(userIndex);
+        if(user.getCart().isEmpty()) return -2;
+
+        double totalCost = 0;
+        for(Map.Entry<String, String> entry: user.getCart().entrySet()){
+            int productIndex = productService.findProductIndex(entry.getKey());
+            Product product = productService.products.get(productIndex);
+            totalCost += product.getPrice();
+        }
+        return totalCost;
     }
 
     //HELPER METHODS
