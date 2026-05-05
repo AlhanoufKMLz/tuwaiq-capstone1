@@ -4,7 +4,6 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 @Data
@@ -12,6 +11,7 @@ import java.util.HashMap;
 public class User {
 
     @NotEmpty(message = "ID must not be empty")
+    @Size(min = 2, message = "ID must be at least 2 characters")
     private String id;
 
     @NotEmpty(message = "Username must not be empty")
@@ -35,6 +35,7 @@ public class User {
     @Positive(message = "Balance must be positive number")
     private double balance;
 
+    @NotNull(message = "Cart must not be null")
     private HashMap<String, String> cart;
 
     @PositiveOrZero(message = "Total Spent must be zero or positive number")

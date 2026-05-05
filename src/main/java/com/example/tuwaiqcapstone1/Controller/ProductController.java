@@ -85,9 +85,11 @@ public class ProductController {
         return ResponseEntity.status(200).body(productsInRange);
     }
 
-    @GetMapping("/get-sorted")
-    public ResponseEntity<?> sortByPrice(){
-        ArrayList<Product> sortedProducts = productService.sortByPrice();
+    @GetMapping("/get-sorted/{order}")
+    public ResponseEntity<?> sortByPrice(@PathVariable String order){
+        ArrayList<Product> sortedProducts = productService.sortByPrice(order);
+        if(sortedProducts == null)
+            return ResponseEntity.status(400).body(new ApiResponse("Order must be low-high or high-low"));
         return ResponseEntity.status(200).body(sortedProducts);
     }
 
