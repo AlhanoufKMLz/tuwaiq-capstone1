@@ -4,6 +4,9 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 @Data
 @AllArgsConstructor
 public class User {
@@ -31,4 +34,9 @@ public class User {
     @NotNull(message = "Balance must not be null")
     @Positive(message = "Balance must be positive number")
     private double balance;
+
+    private HashMap<String, String> cart;
+
+    @PositiveOrZero(message = "Total Spent must be zero or positive number")
+    private double totalSpent;
 }

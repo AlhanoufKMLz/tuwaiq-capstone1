@@ -1,11 +1,12 @@
 package com.example.tuwaiqcapstone1.Service;
 
-import com.example.tuwaiqcapstone1.Model.MerchantStock;
+import com.example.tuwaiqcapstone1.Model.Product;
 import com.example.tuwaiqcapstone1.Model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -66,9 +67,77 @@ public class UserService {
         double productPrice = productService.products.get(productIndex).getPrice();
         if(userBalance < productPrice) return 4; //check balance
 
+        //update user balance
         users.get(userIndex).setBalance(userBalance - productPrice);
+        //update user total spent
+        double userTotalSpent = users.get(userIndex).getTotalSpent();
+        users.get(userIndex).setTotalSpent(userTotalSpent + productPrice);
+        //update stock
         merchantStockService.merchantStocks.get(merchantStockIndex).setStock(stock-1);
+        //update product times purchased
+        int timesPurchased = productService.products.get(productIndex).getTimesPurchased();
+        productService.products.get(productIndex).setTimesPurchased(timesPurchased+1);
+
         return 6;//everything is good
+    }
+
+    public User searchByUsername(String username){
+        for(User u: users){
+            if(u.getUsername().equalsIgnoreCase(username))
+                return u;
+        }
+        return null;
+    }
+
+    public ArrayList<Product> showCart(String userId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return null;
+
+        ArrayList<Product> cartProducts = new ArrayList<>();
+        User user = users.get(userIndex);
+        for(String productId: user.getCart().keySet()){
+            int productIndex = productService.findProductIndex(productId);
+            Product product = productService.products.get(productIndex);
+            cartProducts.add(product);
+        }
+        return cartProducts;
+    }
+
+    public int addToCart(String userId, String productId, String merchantId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1; //check user
+        int productIndex = productService.findProductIndex(productId);
+        if(productIndex == -1) return 0; //check product
+        int merchantIndex = merchantService.findMerchantIndex(merchantId);
+        if(merchantIndex == -1) return 1; //check merchant
+
+        users.get(userIndex).getCart().put(productId, merchantId);
+        return 2;
+    }
+
+    public int claimReward(String userId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1;
+
+        User user = users.get(userIndex);
+        if(user.getTotalSpent() == 0 || user.getTotalSpent() % 1000 != 0) return 0;
+
+        user.setBalance(user.getBalance() + user.getBalance() * 0.1);
+        return 1;
+    }
+
+    public int checkout(String userId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1;
+
+        User user = users.get(userIndex);
+        if(user.getCart().isEmpty()) return 0;
+
+        for(Map.Entry<String, String> entry: user.getCart().entrySet()){
+            buyProduct(userId, entry.getKey(), entry.getValue());
+        }
+        user.getCart().clear();
+        return 1;
     }
 
     //HELPER METHODS
