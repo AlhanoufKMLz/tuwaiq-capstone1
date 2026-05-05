@@ -46,6 +46,16 @@ public class ProductService {
         return true;
     }
 
+
+    //EXTRA ENDPOINTS
+    public Product searchByName(String name){
+        for(Product p: products){
+            if(p.getName().equalsIgnoreCase(name))
+                return p;
+        }
+        return null;
+    }
+
     public ArrayList<Product> getProductsByCategory(String categoryId){
         if(categoryService.findCategoryIndex(categoryId) == -1)
             return null;
@@ -58,6 +68,39 @@ public class ProductService {
         return categoryProducts;
     }
 
+    public ArrayList<Product> getProductsByPriceRange(double min, double max){
+        ArrayList<Product> productsInRange = new ArrayList<>();
+        for(Product p: products){
+            if(p.getPrice() >= min && p.getPrice() <= max)
+                productsInRange.add(p);
+        }
+        return productsInRange;
+    }
+
+    public ArrayList<Product> sortByPrice(String order){
+        if(!order.equalsIgnoreCase("low-high") && !order.equalsIgnoreCase("high-low"))
+            return null;
+        ArrayList<Product> sortedProducts = new ArrayList<>(products);
+
+        if(order.equalsIgnoreCase("low-high"))
+            sortedProducts.sort((p1, p2) -> (int) (p1.getPrice() - p2.getPrice()));
+         else
+            sortedProducts.sort((p1, p2) -> (int) (p2.getPrice() - p1.getPrice()));
+
+        return sortedProducts;
+    }
+
+    public Product getBestSeller() {
+        if (products.isEmpty())
+            return null;
+
+        Product bestSeller = products.get(0);
+        for (Product p : products)
+            if (p.getTimesPurchased() > bestSeller.getTimesPurchased())
+                bestSeller = p;
+        return bestSeller;
+    }
+
 
     //HELPER METHODS
     public int findProductIndex(String id){
@@ -66,4 +109,5 @@ public class ProductService {
                 return i;
         return -1;
     }
+
 }

@@ -41,6 +41,16 @@ public class MerchantService {
     }
 
 
+    //EXTRA ENDPOINTS
+    public Merchant searchByName(String name){
+        for(Merchant m: merchants){
+            if(m.getName().equalsIgnoreCase(name))
+                return m;
+        }
+        return null;
+    }
+
+
     //HELPER METHODS
     public int findMerchantIndex(String id){
         for(int i = 0; i < merchants.size(); i++)
