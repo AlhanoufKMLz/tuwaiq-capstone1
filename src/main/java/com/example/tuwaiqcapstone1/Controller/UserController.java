@@ -105,6 +105,18 @@ public class UserController {
         return ResponseEntity.status(200).body(new ApiResponse("Product added to the cart successfully"));
     }
 
+    @DeleteMapping("/remove-from-cart/{userId}/{productId}")
+    public ResponseEntity<?> removeFromCart(@PathVariable String userId, @PathVariable String productId) {
+        int result = userService.removeFromCart(userId, productId);
+        if (result == -1)
+            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+        if (result == 0)
+            return ResponseEntity.status(400).body(new ApiResponse("Cart is empty"));
+        if (result == 2)
+            return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found in cart"));
+        return ResponseEntity.status(200).body(new ApiResponse("Product removed from cart successfully"));
+    }
+
     @PutMapping("/clear-cart/{userId}")
     public ResponseEntity<?> clearCart(@PathVariable String userId){
         boolean isDone = userService.clearCart(userId);

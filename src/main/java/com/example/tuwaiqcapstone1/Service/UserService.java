@@ -115,6 +115,19 @@ public class UserService {
         return 2;
     }
 
+    public int removeFromCart(String userId, String productId) {
+        int userIndex = findUserIndex(userId);
+        if (userIndex == -1) return -1;
+
+        User user = users.get(userIndex);
+        if (user.getCart().isEmpty()) return 0;
+
+        if (!user.getCart().containsKey(productId)) return 2;
+
+        user.getCart().remove(productId);
+        return 1;
+    }
+
     public boolean clearCart(String userId){
         int userIndex = findUserIndex(userId);
         if(userIndex == -1)
