@@ -41,7 +41,7 @@ public class CategoryController {
         boolean isDone = categoryService.updateCategory(id, category);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("Category updated successfully"));
-        return ResponseEntity.status(400).body(new ApiResponse("No category with ID: " + id + " found"));
+        return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + id + " found"));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -49,7 +49,7 @@ public class CategoryController {
         boolean isDone = categoryService.deleteCategory(id);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("Category deleted successfully"));
-        return ResponseEntity.status(400).body(new ApiResponse("No category with ID: " + id + " found"));
+        return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + id + " found"));
     }
 
 

@@ -1,9 +1,7 @@
 package com.example.tuwaiqcapstone1.Controller;
 
 import com.example.tuwaiqcapstone1.ApiResponse.ApiResponse;
-import com.example.tuwaiqcapstone1.Model.Category;
 import com.example.tuwaiqcapstone1.Model.Merchant;
-import com.example.tuwaiqcapstone1.Service.CategoryService;
 import com.example.tuwaiqcapstone1.Service.MerchantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +41,7 @@ public class MerchantController {
         boolean isDone = merchantService.updateMerchant(id, merchant);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("Merchant updated successfully"));
-        return ResponseEntity.status(400).body(new ApiResponse("No merchant with ID: " + id + " found"));
+        return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + id + " found"));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -51,7 +49,7 @@ public class MerchantController {
         boolean isDone = merchantService.deleteMerchant(id);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("Merchant deleted successfully"));
-        return ResponseEntity.status(400).body(new ApiResponse("No merchant with ID: " + id + " found"));
+        return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + id + " found"));
     }
 
 
