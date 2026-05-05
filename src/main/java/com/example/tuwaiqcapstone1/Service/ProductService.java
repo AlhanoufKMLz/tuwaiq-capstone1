@@ -77,9 +77,16 @@ public class ProductService {
         return productsInRange;
     }
 
-    public ArrayList<Product> sortByPrice(){
+    public ArrayList<Product> sortByPrice(String order){
+        if(!order.equalsIgnoreCase("low-high") && !order.equalsIgnoreCase("high-low"))
+            return null;
         ArrayList<Product> sortedProducts = new ArrayList<>(products);
-        sortedProducts.sort((p1, p2) -> (int) (p1.getPrice() - p2.getPrice()));
+
+        if(order.equalsIgnoreCase("low-high"))
+            sortedProducts.sort((p1, p2) -> (int) (p1.getPrice() - p2.getPrice()));
+         else
+            sortedProducts.sort((p1, p2) -> (int) (p2.getPrice() - p1.getPrice()));
+
         return sortedProducts;
     }
 
