@@ -72,6 +72,7 @@ public class ProductService {
     }
 
     public ArrayList<Product> getProductsByPriceRange(double min, double max){
+        if(min > max || min < 0) return null;
         ArrayList<Product> productsInRange = new ArrayList<>();
         for(Product p: products){
             if(p.getPrice() >= min && p.getPrice() <= max)
