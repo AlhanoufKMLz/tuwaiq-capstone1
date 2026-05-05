@@ -110,9 +110,14 @@ public class UserService {
         if(productIndex == -1) return 0; //check product
         int merchantIndex = merchantService.findMerchantIndex(merchantId);
         if(merchantIndex == -1) return 1; //check merchant
+        int merchantStockIndex = merchantStockService.findByProductAndMerchantId(productId, merchantId);
+        if(merchantStockIndex == -1) return 2; //check merchant stock
+
+        int stock = merchantStockService.merchantStocks.get(merchantStockIndex).getStock();
+        if(stock < 1) return 3; //check stock
 
         users.get(userIndex).getCart().put(productId, merchantId);
-        return 2;
+        return 4;
     }
 
     public int removeFromCart(String userId, String productId) {
@@ -142,7 +147,7 @@ public class UserService {
         if(userIndex == -1) return -1;
 
         User user = users.get(userIndex);
-        if(user.getTotalSpent() == 0 || user.getTotalSpent() % 1000 != 0) return 0;
+        if(user.getTotalSpent() < 1000) return 0;
 
         user.setBalance(user.getBalance() + user.getTotalSpent() * 0.1);
         user.setTotalSpent(0);
@@ -178,6 +183,7 @@ public class UserService {
         }
         return totalCost;
     }
+
 
     //HELPER METHODS
     public int findUserIndex(String id){
