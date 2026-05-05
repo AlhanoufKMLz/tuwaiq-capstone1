@@ -37,7 +37,7 @@ public class MerchantStockController {
         if(result == 1)
             return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + merchantStock.getMerchantId() + " found"));
         if(result == 2)
-            return ResponseEntity.status(400).body(new ApiResponse("Stock must be more than 10"));
+            return ResponseEntity.status(400).body(new ApiResponse("Stock must be at least 11"));
         if(result == 3)
             return ResponseEntity.status(200).body(new ApiResponse("Merchant Stock added successfully"));
         return ResponseEntity.status(400).body(new ApiResponse("ID: " + merchantStock.getId() + " already used"));
@@ -99,7 +99,7 @@ public class MerchantStockController {
         if(merchantProducts == null)
             return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + merchantId + " found"));
         if(merchantProducts.isEmpty())
-            return ResponseEntity.status(404).body(new ApiResponse("Merchant with ID: " + merchantId + " doesn't have any products in stock"));
+            return ResponseEntity.status(200).body(new ApiResponse("Merchant with ID: " + merchantId + " doesn't have any products in stock"));
         return ResponseEntity.status(200).body(merchantProducts);
     }
 
@@ -109,7 +109,7 @@ public class MerchantStockController {
         if(productMerchants == null)
             return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found"));
         if(productMerchants.isEmpty())
-            return ResponseEntity.status(404).body(new ApiResponse("No merchants sell product with ID: " + productId));
+            return ResponseEntity.status(200).body(new ApiResponse("No merchants sell product with ID: " + productId));
         return ResponseEntity.status(200).body(productMerchants);
     }
 
@@ -117,7 +117,7 @@ public class MerchantStockController {
     public ResponseEntity<?> getOutOfStockProducts(){
         ArrayList<Product> outOfStockProducts = merchantStockService.getOutOfStockProducts();
         if(outOfStockProducts.isEmpty())
-            return ResponseEntity.status(200).body(new ApiResponse("There is no products out of stock"));
+            return ResponseEntity.status(200).body(new ApiResponse("There are no products out of stock"));
         return ResponseEntity.status(200).body(outOfStockProducts);
     }
 
@@ -125,8 +125,7 @@ public class MerchantStockController {
     public ResponseEntity<?> getInStockProducts(){
         ArrayList<Product> inStockProducts = merchantStockService.getInStockProducts();
         if(inStockProducts.isEmpty())
-            return ResponseEntity.status(200).body(new ApiResponse("There is no products in stock"));
+            return ResponseEntity.status(200).body(new ApiResponse("There are no products in stock"));
         return ResponseEntity.status(200).body(inStockProducts);
     }
-
 }

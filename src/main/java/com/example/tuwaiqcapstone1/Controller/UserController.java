@@ -89,7 +89,7 @@ public class UserController {
         if(cartProducts == null)
             return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
         if(cartProducts.isEmpty())
-            return ResponseEntity.status(200).body(new ApiResponse("There is no products in the cart yet"));
+            return ResponseEntity.status(200).body(new ApiResponse("There are no products in the cart yet"));
         return ResponseEntity.status(200).body(cartProducts);
     }
 
@@ -121,7 +121,7 @@ public class UserController {
         return ResponseEntity.status(200).body(new ApiResponse("Product removed from cart successfully"));
     }
 
-    @PutMapping("/clear-cart/{userId}")
+    @DeleteMapping("/clear-cart/{userId}")
     public ResponseEntity<?> clearCart(@PathVariable String userId){
         boolean isDone = userService.clearCart(userId);
         if(isDone)
@@ -147,16 +147,16 @@ public class UserController {
         if(result == -3) //comes from checkout
             return ResponseEntity.status(400).body(new ApiResponse("User with ID: " + userId + " doesn't have products in the cart"));
         if (result == 0) //comes from buy product
-            return ResponseEntity.status(404).body(new ApiResponse("One cart product not found"));
+            return ResponseEntity.status(404).body(new ApiResponse("A product in your cart no longer exists"));
         if (result == 1) //comes from buy product
-            return ResponseEntity.status(404).body(new ApiResponse("One merchant not found"));
+            return ResponseEntity.status(404).body(new ApiResponse("A merchant in your cart no longer exists"));
         if (result == 2) //comes from buy product
-            return ResponseEntity.status(400).body(new ApiResponse("Merchant with ID: doesn't sell the product with ID: "));
+            return ResponseEntity.status(400).body(new ApiResponse("A product in your cart no longer available at the selected merchant"));
         if (result ==3) //comes from buy product
-            return ResponseEntity.status(400).body(new ApiResponse("There is out of stock product in the cart"));
+            return ResponseEntity.status(400).body(new ApiResponse("There is an out of stock product in the cart"));
         if (result == 4) //comes from buy product
             return ResponseEntity.status(400).body(new ApiResponse("Insufficient balance"));
-        return ResponseEntity.status(200).body(new ApiResponse("Checkout successfully"));
+        return ResponseEntity.status(200).body(new ApiResponse("Checked out successfully"));
     }
 
     @GetMapping("/cart-cost/{userId}")
@@ -165,7 +165,7 @@ public class UserController {
         if(totalCost == -1)
             return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
         if(totalCost == -2)
-            return ResponseEntity.status(400).body(new ApiResponse("User with ID: " + userId + " doesn't have products in the cart"));
+            return ResponseEntity.status(200).body(new ApiResponse("User with ID: " + userId + " doesn't have products in the cart"));
         return ResponseEntity.status(200).body(new ApiResponse("Cart total cost: " + totalCost));
     }
 }

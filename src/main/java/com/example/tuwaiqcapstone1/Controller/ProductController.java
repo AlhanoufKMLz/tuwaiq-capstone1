@@ -35,7 +35,7 @@ public class ProductController {
         if(result == 0)
             return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + product.getCategoryId() + " found"));
         if(result == -2)
-            return ResponseEntity.status(400).body(new ApiResponse("Times purchased must be 0"));
+            return ResponseEntity.status(400).body(new ApiResponse("Times purchased must be 0 when adding a product"));
         return ResponseEntity.status(200).body(new ApiResponse("Product added successfully"));
     }
 
