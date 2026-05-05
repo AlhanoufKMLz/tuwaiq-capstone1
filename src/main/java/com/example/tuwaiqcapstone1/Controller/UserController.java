@@ -105,6 +105,14 @@ public class UserController {
         return ResponseEntity.status(200).body(new ApiResponse("Product added to the cart successfully"));
     }
 
+    @PutMapping("/clear-cart/{userId}")
+    public ResponseEntity<?> clearCart(@PathVariable String userId){
+        boolean isDone = userService.clearCart(userId);
+        if(isDone)
+            return ResponseEntity.status(200).body(new ApiResponse("Cart cleared successfully"));
+        return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+    }
+
     @PutMapping("/claim-reward/{userId}")
     public ResponseEntity<?> claimReward(@PathVariable String userId){
         int result = userService.claimReward(userId);

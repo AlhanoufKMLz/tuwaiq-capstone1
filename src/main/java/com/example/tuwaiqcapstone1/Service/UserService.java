@@ -115,6 +115,15 @@ public class UserService {
         return 2;
     }
 
+    public boolean clearCart(String userId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1)
+            return false;
+
+        users.get(userIndex).getCart().clear();
+        return true;
+    }
+
     public int claimReward(String userId){
         int userIndex = findUserIndex(userId);
         if(userIndex == -1) return -1;
