@@ -163,6 +163,22 @@ public class UserService {
         return 1;
     }
 
+    public double calculateCartCost(String userId){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1;
+
+        User user = users.get(userIndex);
+        if(user.getCart().isEmpty()) return -2;
+
+        double totalCost = 0;
+        for(Map.Entry<String, String> entry: user.getCart().entrySet()){
+            int productIndex = productService.findProductIndex(entry.getKey());
+            Product product = productService.products.get(productIndex);
+            totalCost += product.getPrice();
+        }
+        return totalCost;
+    }
+
     //HELPER METHODS
     public int findUserIndex(String id){
         for(int i = 0; i < users.size(); i++)
