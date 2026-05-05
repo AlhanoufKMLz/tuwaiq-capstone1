@@ -58,15 +58,18 @@ public class MerchantStockService {
         return true;
     }
 
-    public boolean addStock(String productId, String merchantId, int amount){
-        if (amount <= 0)
-            return false;
+
+    //EXTRA ENDPOINTS
+    public int addStock(String productId, String merchantId, int amount){
+        if(productService.findProductIndex(productId) == -1) return -1;
+        if(merchantService.findMerchantIndex(merchantId) == -1) return -2;
+        if (amount <= 0) return -3;
 
         int index = findByProductAndMerchantId(productId, merchantId);
         if(index == -1)
-            return false;
+            return -4;
         merchantStocks.get(index).setStock(merchantStocks.get(index).getStock() + amount);
-        return true;
+        return 1;
     }
 
     public int clearMerchantStock(String merchantId){
@@ -103,6 +106,27 @@ public class MerchantStockService {
         return productMerchants;
     }
 
+    public ArrayList<Product> getOutOfStockProducts(){
+        ArrayList<Product> outOfStockProducts = new ArrayList<>();
+        for(MerchantStock m: merchantStocks){
+            if(m.getStock() == 0){
+                int productId = productService.findProductIndex(m.getProductId());
+                outOfStockProducts.add(productService.products.get(productId));
+            }
+        }
+        return outOfStockProducts;
+    }
+
+    public ArrayList<Product> getInStockProducts(){
+        ArrayList<Product> inStockProducts = new ArrayList<>();
+        for(MerchantStock m: merchantStocks){
+            if(m.getStock() > 0){
+                int productId = productService.findProductIndex(m.getProductId());
+                inStockProducts.add(productService.products.get(productId));
+            }
+        }
+        return inStockProducts;
+    }
 
 
     //HELPER METHODS
