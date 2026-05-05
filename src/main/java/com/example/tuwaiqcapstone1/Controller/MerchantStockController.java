@@ -109,7 +109,7 @@ public class MerchantStockController {
         if(productMerchants == null)
             return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found"));
         if(productMerchants.isEmpty())
-            return ResponseEntity.status(404).body(new ApiResponse("Product with ID: " + productId + " not sold by any merchant"));
+            return ResponseEntity.status(404).body(new ApiResponse("No merchants sell product with ID: " + productId));
         return ResponseEntity.status(200).body(productMerchants);
     }
 
