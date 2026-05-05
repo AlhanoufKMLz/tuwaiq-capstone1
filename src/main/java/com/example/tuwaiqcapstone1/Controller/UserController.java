@@ -44,7 +44,7 @@ public class UserController {
         boolean isDone = userService.updateUser(id, user);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("User updated successfully"));
-        return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + id + " found"));
+        return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + id + " found"));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -52,7 +52,7 @@ public class UserController {
         boolean isDone = userService.deleteUser(id);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("User deleted successfully"));
-        return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + id + " found"));
+        return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + id + " found"));
     }
 
 
@@ -72,7 +72,6 @@ public class UserController {
             return ResponseEntity.status(400).body(new ApiResponse("Product with ID: " + productId + " is out of stock"));
         if (result == 4)
             return ResponseEntity.status(400).body(new ApiResponse("Insufficient balance"));
-
         return ResponseEntity.status(200).body(new ApiResponse("Product purchased successfully"));
     }
 
@@ -143,10 +142,20 @@ public class UserController {
     @PutMapping("/checkout/{userId}")
     public ResponseEntity<?> checkout(@PathVariable String userId){
         int result = userService.checkout(userId);
-        if(result == -1)
+        if(result == -2) //comes from checkout
             return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
-        if(result == 0)
+        if(result == -3) //comes from checkout
             return ResponseEntity.status(400).body(new ApiResponse("User with ID: " + userId + " doesn't have products in the cart"));
+        if (result == 0) //comes from buy product
+            return ResponseEntity.status(404).body(new ApiResponse("One cart product not found"));
+        if (result == 1) //comes from buy product
+            return ResponseEntity.status(404).body(new ApiResponse("One merchant not found"));
+        if (result == 2) //comes from buy product
+            return ResponseEntity.status(400).body(new ApiResponse("Merchant with ID: doesn't sell the product with ID: "));
+        if (result ==3) //comes from buy product
+            return ResponseEntity.status(400).body(new ApiResponse("There is out of stock product in the cart"));
+        if (result == 4) //comes from buy product
+            return ResponseEntity.status(400).body(new ApiResponse("Insufficient balance"));
         return ResponseEntity.status(200).body(new ApiResponse("Checkout successfully"));
     }
 

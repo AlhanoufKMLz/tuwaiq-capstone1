@@ -78,7 +78,7 @@ public class UserService {
         int timesPurchased = productService.products.get(productIndex).getTimesPurchased();
         productService.products.get(productIndex).setTimesPurchased(timesPurchased+1);
 
-        return 6;//everything is good
+        return 5;//everything is good
     }
 
     public User searchByUsername(String username){
@@ -97,6 +97,7 @@ public class UserService {
         User user = users.get(userIndex);
         for(String productId: user.getCart().keySet()){
             int productIndex = productService.findProductIndex(productId);
+            if(productIndex == -1) continue;
             Product product = productService.products.get(productIndex);
             cartProducts.add(product);
         }
@@ -156,16 +157,17 @@ public class UserService {
 
     public int checkout(String userId){
         int userIndex = findUserIndex(userId);
-        if(userIndex == -1) return -1;
+        if(userIndex == -1) return -2;
 
         User user = users.get(userIndex);
-        if(user.getCart().isEmpty()) return 0;
+        if(user.getCart().isEmpty()) return -3;
 
         for(Map.Entry<String, String> entry: user.getCart().entrySet()){
-            buyProduct(userId, entry.getKey(), entry.getValue());
+            int result = buyProduct(userId, entry.getKey(), entry.getValue());
+            if(result != 5) return result; //there is a problem
         }
         user.getCart().clear();
-        return 1;
+        return 6;
     }
 
     public double calculateCartCost(String userId){
