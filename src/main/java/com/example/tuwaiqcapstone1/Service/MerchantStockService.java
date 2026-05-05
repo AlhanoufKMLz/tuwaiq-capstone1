@@ -1,6 +1,7 @@
 package com.example.tuwaiqcapstone1.Service;
 
 import com.example.tuwaiqcapstone1.Model.MerchantStock;
+import com.example.tuwaiqcapstone1.Model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +75,20 @@ public class MerchantStockService {
                 m.getMerchantId().equalsIgnoreCase(merchantId));
         return removed ? 1 : 0;
     }
+
+    public ArrayList<Product> getMerchantProducts(String merchantId){
+        if(merchantService.findMerchantIndex(merchantId) == -1) return null;
+
+        ArrayList<Product> merchantProducts = new ArrayList<>();
+        for(MerchantStock m: merchantStocks){
+            if(m.getMerchantId().equalsIgnoreCase(merchantId)){
+                int productId = productService.findProductIndex(m.getProductId());
+                merchantProducts.add(productService.products.get(productId));
+            }
+        }
+        return merchantProducts;
+    }
+
 
 
     //HELPER METHODS

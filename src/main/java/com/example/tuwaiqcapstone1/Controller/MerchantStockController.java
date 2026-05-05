@@ -2,12 +2,15 @@ package com.example.tuwaiqcapstone1.Controller;
 
 import com.example.tuwaiqcapstone1.ApiResponse.ApiResponse;
 import com.example.tuwaiqcapstone1.Model.MerchantStock;
+import com.example.tuwaiqcapstone1.Model.Product;
 import com.example.tuwaiqcapstone1.Service.MerchantStockService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/v1/merchant-stock")
@@ -81,6 +84,16 @@ public class MerchantStockController {
             return ResponseEntity.status(200).body(new ApiResponse("Merchant with ID: " + merchantId + " doesn't have any stock"));
         return ResponseEntity.status(200).body(new ApiResponse("Stock for merchant with ID: " + merchantId + " cleared successfully"));
 
+    }
+
+    @GetMapping("/get-merchant-products/{merchantId}")
+    public ResponseEntity<?> getMerchantProducts(@PathVariable String merchantId){
+        ArrayList<Product> merchantProducts = merchantStockService.getMerchantProducts(merchantId);
+        if(merchantProducts == null)
+            return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + merchantId + " found"));
+        if(merchantProducts.isEmpty())
+            return ResponseEntity.status(200).body(new ApiResponse("Merchant with ID: " + merchantId + " doesn't have any products in stock"));
+        return ResponseEntity.status(200).body(merchantProducts);
     }
 
 }
