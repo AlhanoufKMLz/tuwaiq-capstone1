@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Data
 @AllArgsConstructor
@@ -34,5 +35,8 @@ public class User {
     @Positive(message = "Balance must be positive number")
     private double balance;
 
-    private ArrayList<String> cart;
+    private HashMap<String, String> cart;
+
+    @PositiveOrZero(message = "Total Spent must be zero or positive number")
+    private double totalSpent;
 }
