@@ -91,4 +91,12 @@ public class ProductController {
         return ResponseEntity.status(200).body(sortedProducts);
     }
 
+    @GetMapping("/best-seller")
+    public ResponseEntity<?> getBestSeller() {
+        Product product = productService.getBestSeller();
+        if (product == null)
+            return ResponseEntity.status(404).body(new ApiResponse("No products found"));
+        return ResponseEntity.status(200).body(product);
+    }
+
 }
