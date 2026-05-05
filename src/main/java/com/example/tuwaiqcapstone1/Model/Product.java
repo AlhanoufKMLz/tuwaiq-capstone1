@@ -9,6 +9,7 @@ import lombok.Data;
 public class Product {
 
     @NotEmpty(message = "ID must not be empty")
+    @Size(min = 2, message = "ID must be at least 2 characters")
     private String id;
 
     @NotEmpty(message = "Name must not be empty")
@@ -22,5 +23,7 @@ public class Product {
     @NotEmpty(message = "Category ID must not be empty")
     private String categoryId;
 
+    @NotNull(message = "Price must not be null")
+    @PositiveOrZero(message = "Times Purchased must be zero or positive number")
     private int timesPurchased;
 }

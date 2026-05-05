@@ -10,6 +10,7 @@ import lombok.Data;
 public class Category {
 
     @NotEmpty(message = "ID must not be empty")
+    @Size(min = 2, message = "ID must be at least 2 characters")
     private String id;
 
     @NotEmpty(message = "Name must not be empty")
