@@ -3,10 +3,8 @@ package com.example.tuwaiqcapstone1.Service;
 import com.example.tuwaiqcapstone1.Model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityReturnValueHandler;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 @Service
 @RequiredArgsConstructor
