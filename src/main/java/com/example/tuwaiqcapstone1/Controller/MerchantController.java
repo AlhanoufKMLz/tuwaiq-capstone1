@@ -41,7 +41,7 @@ public class MerchantController {
         boolean isDone = merchantService.updateMerchant(id, merchant);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("Merchant updated successfully"));
-        return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + id + " found"));
+        return ResponseEntity.status(400).body(new ApiResponse("No merchant with ID: " + id + " found"));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -49,7 +49,7 @@ public class MerchantController {
         boolean isDone = merchantService.deleteMerchant(id);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("Merchant deleted successfully"));
-        return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + id + " found"));
+        return ResponseEntity.status(400).body(new ApiResponse("No merchant with ID: " + id + " found"));
     }
 
 
@@ -58,7 +58,7 @@ public class MerchantController {
     public ResponseEntity<?> searchByName(@PathVariable String name){
         Merchant merchant = merchantService.searchByName(name);
         if(merchant == null)
-            return ResponseEntity.status(404).body(new ApiResponse("No merchant with name: " + name + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No merchant with name: " + name + " found"));
         return ResponseEntity.status(200).body(merchant);
     }
 }

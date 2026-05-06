@@ -38,6 +38,8 @@ public class User {
     @NotNull(message = "Cart must not be null")
     private HashMap<String, String> cart;
 
+    private HashMap<String, String> purchaseHistory;
+
     @NotNull(message = "Total Spent must not be null")
     @PositiveOrZero(message = "Total Spent must be zero or positive number")
     private double totalSpent;

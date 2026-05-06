@@ -106,10 +106,12 @@ public class MerchantStockService {
         return productMerchants;
     }
 
-    public ArrayList<Product> getOutOfStockProducts(){
+    public ArrayList<Product> getOutOfStockProducts(String merchantId){
+        if(merchantService.findMerchantIndex(merchantId) == -1) return null;
+
         ArrayList<Product> outOfStockProducts = new ArrayList<>();
         for(MerchantStock m: merchantStocks){
-            if(m.getStock() == 0){
+            if(m.getStock() == 0 && m.getMerchantId().equalsIgnoreCase(merchantId)){
                 int index = productService.findProductIndex(m.getProductId());
                 Product product = productService.products.get(index);
                 if (!outOfStockProducts.contains(product))
@@ -119,10 +121,12 @@ public class MerchantStockService {
         return outOfStockProducts;
     }
 
-    public ArrayList<Product> getInStockProducts(){
+    public ArrayList<Product> getInStockProducts(String merchantId){
+        if(merchantService.findMerchantIndex(merchantId) == -1) return null;
+
         ArrayList<Product> inStockProducts = new ArrayList<>();
         for(MerchantStock m: merchantStocks){
-            if(m.getStock() > 0){
+            if(m.getStock() > 0 && m.getMerchantId().equalsIgnoreCase(merchantId)){
                 int index = productService.findProductIndex(m.getProductId());
                 Product product = productService.products.get(index);
                 if (!inStockProducts.contains(product))

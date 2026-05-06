@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -81,28 +83,44 @@ public class ProductService {
         return productsInRange;
     }
 
-    public ArrayList<Product> sortByPrice(String order){
-        if(!order.equalsIgnoreCase("low-high") && !order.equalsIgnoreCase("high-low"))
-            return null;
+    public ArrayList<Product> sortPriceLowToHigh(){
         ArrayList<Product> sortedProducts = new ArrayList<>(products);
-
-        if(order.equalsIgnoreCase("low-high"))
-            sortedProducts.sort((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
-         else
-            sortedProducts.sort((p1, p2) -> Double.compare(p2.getPrice(), p1.getPrice()));
-
+        sortedProducts.sort((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
         return sortedProducts;
     }
 
-    public Product getBestSeller() {
-        if (products.isEmpty())
-            return null;
+    public ArrayList<Product> sortPriceHighToLow(){
+        ArrayList<Product> sortedProducts = new ArrayList<>(products);
+        sortedProducts.sort((p1, p2) -> Double.compare(p2.getPrice(), p1.getPrice()));
+        return sortedProducts;
+    }
 
-        Product bestSeller = products.get(0);
-        for (Product p : products)
-            if (p.getTimesPurchased() > bestSeller.getTimesPurchased())
-                bestSeller = p;
-        return bestSeller;
+    public ArrayList<Product> getBestSellers() {
+        ArrayList<Product> bestSellers = new ArrayList<>();
+        int topTimesPurchased = 0;
+        for (Product p : products) {
+            if (p.getTimesPurchased() > topTimesPurchased) {
+                topTimesPurchased = p.getTimesPurchased();
+                bestSellers.clear();
+                bestSellers.add(p);
+            } else if (p.getTimesPurchased() == topTimesPurchased)
+                bestSellers.add(p);
+        }
+        return bestSellers;
+    }
+
+    public HashMap<Product, Double> getTopRatedProducts(){
+        if(products.isEmpty()) return null;
+
+        LinkedHashMap<Product, Double> rated = new LinkedHashMap<>();
+
+        ArrayList<Product> sorted = new ArrayList<>(products);
+        sorted.sort((a, b) -> Double.compare(getAverageRating(b), getAverageRating(a)));
+
+        for(Product p: sorted)
+            rated.put(p, getAverageRating(p));
+
+        return rated;
     }
 
 
@@ -112,6 +130,13 @@ public class ProductService {
             if(products.get(i).getId().equalsIgnoreCase(id))
                 return i;
         return -1;
+    }
+
+    private double getAverageRating(Product product){
+        if(product.getRatings().isEmpty()) return 0;
+        int sum = 0;
+        for(int r: product.getRatings()) sum += r;
+        return (double) sum / product.getRatings().size();
     }
 
 }

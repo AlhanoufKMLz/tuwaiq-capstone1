@@ -61,11 +61,11 @@ public class UserController {
     public ResponseEntity<?> buyProduct(@PathVariable String userId, @PathVariable String productId, @PathVariable String merchantId) {
         int result = userService.buyProduct(userId, productId, merchantId);
         if (result == -1)
-            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found"));
         if (result == 0)
-            return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + productId + " found"));
         if (result == 1)
-            return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + merchantId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No merchant with ID: " + merchantId + " found"));
         if (result == 2)
             return ResponseEntity.status(400).body(new ApiResponse("Merchant with ID: " + merchantId + " doesn't sell the product with ID: " + productId));
         if (result ==3)
@@ -79,7 +79,7 @@ public class UserController {
     public ResponseEntity<?> searchByUsername(@PathVariable String username){
         User user = userService.searchByUsername(username);
         if(user == null)
-            return ResponseEntity.status(404).body(new ApiResponse("No user with username: " + username + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No user with username: " + username + " found"));
         return ResponseEntity.status(200).body(user);
     }
 
@@ -87,7 +87,7 @@ public class UserController {
     public ResponseEntity<?> showCart(@PathVariable String userId){
         ArrayList<Product> cartProducts = userService.showCart(userId);
         if(cartProducts == null)
-            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found"));
         if(cartProducts.isEmpty())
             return ResponseEntity.status(200).body(new ApiResponse("There are no products in the cart yet"));
         return ResponseEntity.status(200).body(cartProducts);
@@ -97,11 +97,11 @@ public class UserController {
     public ResponseEntity<?> addToCart(@PathVariable String userId, @PathVariable String productId, @PathVariable String merchantId){
         int result = userService.addToCart(userId, productId, merchantId);
         if(result == -1)
-            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found"));
         if(result == 0)
-            return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + productId + " found"));
         if(result == 1)
-            return ResponseEntity.status(404).body(new ApiResponse("No merchant with ID: " + merchantId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No merchant with ID: " + merchantId + " found"));
         if (result == 2)
             return ResponseEntity.status(400).body(new ApiResponse("Merchant with ID: " + merchantId + " doesn't sell the product with ID: " + productId));
         if (result ==3)
@@ -113,11 +113,11 @@ public class UserController {
     public ResponseEntity<?> removeFromCart(@PathVariable String userId, @PathVariable String productId) {
         int result = userService.removeFromCart(userId, productId);
         if (result == -1)
-            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found"));
         if (result == 0)
             return ResponseEntity.status(400).body(new ApiResponse("Cart is empty"));
         if (result == 2)
-            return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + productId + " found in cart"));
+            return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + productId + " found in cart"));
         return ResponseEntity.status(200).body(new ApiResponse("Product removed from cart successfully"));
     }
 
@@ -126,14 +126,14 @@ public class UserController {
         boolean isDone = userService.clearCart(userId);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("Cart cleared successfully"));
-        return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+        return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found"));
     }
 
     @PutMapping("/claim-reward/{userId}")
     public ResponseEntity<?> claimReward(@PathVariable String userId){
         int result = userService.claimReward(userId);
         if(result == -1)
-            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found"));
         if(result == 0)
             return ResponseEntity.status(400).body(new ApiResponse("Total spent must be at least 1000 to claim reward"));
         return ResponseEntity.status(200).body(new ApiResponse("Reward claimed successfully"));
@@ -143,13 +143,13 @@ public class UserController {
     public ResponseEntity<?> checkout(@PathVariable String userId){
         int result = userService.checkout(userId);
         if(result == -2) //comes from checkout
-            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found"));
         if(result == -3) //comes from checkout
             return ResponseEntity.status(400).body(new ApiResponse("User with ID: " + userId + " doesn't have products in the cart"));
         if (result == 0) //comes from buy product
-            return ResponseEntity.status(404).body(new ApiResponse("A product in your cart no longer exists"));
+            return ResponseEntity.status(400).body(new ApiResponse("A product in your cart no longer exists"));
         if (result == 1) //comes from buy product
-            return ResponseEntity.status(404).body(new ApiResponse("A merchant in your cart no longer exists"));
+            return ResponseEntity.status(400).body(new ApiResponse("A merchant in your cart no longer exists"));
         if (result == 2) //comes from buy product
             return ResponseEntity.status(400).body(new ApiResponse("A product in your cart no longer available at the selected merchant"));
         if (result ==3) //comes from buy product
@@ -163,9 +163,37 @@ public class UserController {
     public ResponseEntity<?> calculateCartCost(@PathVariable String userId){
         double totalCost = userService.calculateCartCost(userId);
         if(totalCost == -1)
-            return ResponseEntity.status(404).body(new ApiResponse("No user with ID: " + userId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found"));
         if(totalCost == -2)
             return ResponseEntity.status(200).body(new ApiResponse("User with ID: " + userId + " doesn't have products in the cart"));
         return ResponseEntity.status(200).body(new ApiResponse("Cart total cost: " + totalCost));
+    }
+
+    @PutMapping("/rate/{userId}/{productId}/{rating}")
+    public ResponseEntity<?> rateProduct(@PathVariable String userId, @PathVariable String productId, @PathVariable int rating){
+        int result = userService.rateProduct(userId, productId, rating);
+        if(result == -1)
+            return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found."));
+        if(result == -2)
+            return ResponseEntity.status(400).body(new ApiResponse("User hasn't purchased product with ID: " + productId));
+        if(result == -3)
+            return ResponseEntity.status(400).body(new ApiResponse("Rating must be between 1 and 5"));
+        if(result == -4)
+            return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + productId + " found."));
+        return ResponseEntity.status(200).body(new ApiResponse("Product rated successfully"));
+    }
+
+    @PutMapping("/apply-discount/{userId}/{merchantId}/{percent}")
+    public ResponseEntity<?> applyMerchantDiscount(@PathVariable String userId, @PathVariable String merchantId, @PathVariable double percent){
+        int result = userService.applyMerchantDiscount(userId, merchantId, percent);
+        if(result == -1)
+            return ResponseEntity.status(400).body(new ApiResponse("No user with ID: " + userId + " found."));
+        if(result == -2)
+            return ResponseEntity.status(403).body(new ApiResponse("User must be an admin to apply discount"));
+        if(result == -3)
+            return ResponseEntity.status(400).body(new ApiResponse("Discount must be between 0 and 100"));
+        if(result == -4)
+            return ResponseEntity.status(400).body(new ApiResponse("No products found for merchant: " + merchantId));
+        return ResponseEntity.status(200).body(new ApiResponse("Discount applied successfully"));
     }
 }

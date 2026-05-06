@@ -10,6 +10,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/product")
@@ -33,7 +34,7 @@ public class ProductController {
         if(result == -1)
             return ResponseEntity.status(400).body(new ApiResponse("ID: " + product.getId() + " already used"));
         if(result == 0)
-            return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + product.getCategoryId() + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No category with ID: " + product.getCategoryId() + " found"));
         if(result == -2)
             return ResponseEntity.status(400).body(new ApiResponse("Times purchased must be 0 when adding a product"));
         return ResponseEntity.status(200).body(new ApiResponse("Product added successfully"));
@@ -46,9 +47,9 @@ public class ProductController {
 
         int result = productService.updateProduct(id, product);
         if(result == -1)
-            return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + id + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + id + " found"));
         if(result == 0)
-            return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + product.getCategoryId() + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No category with ID: " + product.getCategoryId() + " found"));
         return ResponseEntity.status(200).body(new ApiResponse("Product updated successfully"));
     }
 
@@ -57,7 +58,7 @@ public class ProductController {
         boolean isDone = productService.deleteProduct(id);
         if(isDone)
             return ResponseEntity.status(200).body(new ApiResponse("Product deleted successfully"));
-        return ResponseEntity.status(404).body(new ApiResponse("No product with ID: " + id + " found"));
+        return ResponseEntity.status(400).body(new ApiResponse("No product with ID: " + id + " found"));
     }
 
 
@@ -66,7 +67,7 @@ public class ProductController {
     public ResponseEntity<?> searchByName(@PathVariable String name){
         Product product = productService.searchByName(name);
         if(product == null)
-            return ResponseEntity.status(404).body(new ApiResponse("No product with name: " + name + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No product with name: " + name + " found"));
         return ResponseEntity.status(200).body(product);
     }
 
@@ -74,7 +75,7 @@ public class ProductController {
     public ResponseEntity<?> getProductsByCategory(@PathVariable String categoryId){
         ArrayList<Product> categoryProducts = productService.getProductsByCategory(categoryId);
         if(categoryProducts == null)
-            return ResponseEntity.status(404).body(new ApiResponse("No category with ID: " + categoryId + " found"));
+            return ResponseEntity.status(400).body(new ApiResponse("No category with ID: " + categoryId + " found"));
         if(categoryProducts.isEmpty())
             return ResponseEntity.status(200).body(new ApiResponse("Category with ID: " + categoryId + " doesn't have any products yet"));
         return ResponseEntity.status(200).body(categoryProducts);
@@ -90,20 +91,31 @@ public class ProductController {
         return ResponseEntity.status(200).body(productsInRange);
     }
 
-    @GetMapping("/get-sorted/{order}")
-    public ResponseEntity<?> sortByPrice(@PathVariable String order){
-        ArrayList<Product> sortedProducts = productService.sortByPrice(order);
-        if(sortedProducts == null)
-            return ResponseEntity.status(400).body(new ApiResponse("Order must be low-high or high-low"));
+    @GetMapping("/sort-price-low-high")
+    public ResponseEntity<?> sortPriceLowToHigh(){
+        ArrayList<Product> sortedProducts = productService.sortPriceLowToHigh();
         return ResponseEntity.status(200).body(sortedProducts);
     }
 
-    @GetMapping("/best-seller")
-    public ResponseEntity<?> getBestSeller() {
-        Product product = productService.getBestSeller();
-        if (product == null)
-            return ResponseEntity.status(404).body(new ApiResponse("No products found"));
-        return ResponseEntity.status(200).body(product);
+    @GetMapping("/sort-price-high-low")
+    public ResponseEntity<?> sortPriceHighToLow(){
+        ArrayList<Product> sortedProducts = productService.sortPriceHighToLow();
+        return ResponseEntity.status(200).body(sortedProducts);
     }
 
+    @GetMapping("/best-sellers")
+    public ResponseEntity<?> getBestSeller() {
+        ArrayList<Product> bestSellers = productService.getBestSellers();
+        if (bestSellers.isEmpty())
+            return ResponseEntity.status(400).body(new ApiResponse("No products found"));
+        return ResponseEntity.status(200).body(bestSellers);
+    }
+
+    @GetMapping("/sort-top-rated")
+    public ResponseEntity<?> getTopRatedProducts(){
+        HashMap<Product, Double> products = productService.getTopRatedProducts();
+        if(products == null)
+            return ResponseEntity.status(400).body(new ApiResponse("No products found."));
+        return ResponseEntity.status(200).body(products);
+    }
 }

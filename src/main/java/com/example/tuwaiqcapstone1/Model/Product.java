@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.ArrayList;
+
 @Data
 @AllArgsConstructor
 public class Product {
@@ -26,4 +28,6 @@ public class Product {
     @NotNull(message = "Price must not be null")
     @PositiveOrZero(message = "Times Purchased must be zero or positive number")
     private int timesPurchased;
+
+    private ArrayList<Integer> ratings;
 }

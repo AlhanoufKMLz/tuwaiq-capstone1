@@ -1,5 +1,6 @@
 package com.example.tuwaiqcapstone1.Service;
 
+import com.example.tuwaiqcapstone1.Model.MerchantStock;
 import com.example.tuwaiqcapstone1.Model.Product;
 import com.example.tuwaiqcapstone1.Model.User;
 import lombok.RequiredArgsConstructor;
@@ -52,17 +53,12 @@ public class UserService {
     //EXTRA ENDPOINTS
     public int buyProduct(String userId, String productId, String merchantId){
         int userIndex = findUserIndex(userId);
-        if(userIndex == -1) return -1; //check user
+        if(userIndex == -1) return -1;
+
+        int result = validateItem(productId, merchantId);
+        if(result != 5) return result;
+
         int productIndex = productService.findProductIndex(productId);
-        if(productIndex == -1) return 0; //check product
-        int merchantIndex = merchantService.findMerchantIndex(merchantId);
-        if(merchantIndex == -1) return 1; //check merchant
-        int merchantStockIndex = merchantStockService.findByProductAndMerchantId(productId, merchantId);
-        if(merchantStockIndex == -1) return 2; //check merchant stock
-
-        int stock = merchantStockService.merchantStocks.get(merchantStockIndex).getStock();
-        if(stock < 1) return 3; //check stock
-
         double userBalance = users.get(userIndex).getBalance();
         double productPrice = productService.products.get(productIndex).getPrice();
         if(userBalance < productPrice) return 4; //check balance
@@ -72,7 +68,11 @@ public class UserService {
         //update user total spent
         double userTotalSpent = users.get(userIndex).getTotalSpent();
         users.get(userIndex).setTotalSpent(userTotalSpent + productPrice);
+        //update user history
+        users.get(userIndex).getPurchaseHistory().put(productId, merchantId);
         //update stock
+        int merchantStockIndex = merchantStockService.findByProductAndMerchantId(productId, merchantId);
+        int stock = merchantStockService.merchantStocks.get(merchantStockIndex).getStock();
         merchantStockService.merchantStocks.get(merchantStockIndex).setStock(stock-1);
         //update product times purchased
         int timesPurchased = productService.products.get(productIndex).getTimesPurchased();
@@ -162,10 +162,18 @@ public class UserService {
         User user = users.get(userIndex);
         if(user.getCart().isEmpty()) return -3;
 
+        //check all the products
+        double totalPrice = 0;
         for(Map.Entry<String, String> entry: user.getCart().entrySet()){
-            int result = buyProduct(userId, entry.getKey(), entry.getValue());
-            if(result != 5) return result; //there is a problem
+            int result = validateItem(entry.getKey(), entry.getValue());
+            if(result != 5) return result;
+            totalPrice += productService.products.get(productService.findProductIndex(entry.getKey())).getPrice();
         }
+        if(user.getBalance() < totalPrice) return 4; //check balance
+
+        //buy all the products
+        for(Map.Entry<String, String> entry: user.getCart().entrySet())
+            buyProduct(userId, entry.getKey(), entry.getValue());
         user.getCart().clear();
         return 6;
     }
@@ -186,6 +194,43 @@ public class UserService {
         return totalCost;
     }
 
+    public int rateProduct(String userId, String productId, int rating){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1; //check user
+
+        if(!users.get(userIndex).getPurchaseHistory().containsKey(productId))
+            return -2; //didn't buy the product
+
+        if(rating < 1 || rating > 5)
+            return -3;
+
+        int productIndex = productService.findProductIndex(productId);
+        if(productIndex == -1) return -4;
+
+        productService.products.get(productIndex).getRatings().add(rating);
+        return 1;
+    }
+
+    public int applyMerchantDiscount(String userId, String merchantId, double percent){
+        int userIndex = findUserIndex(userId);
+        if(userIndex == -1) return -1;
+        if(!users.get(userIndex).getRole().equalsIgnoreCase("admin")) return -2;
+        if(percent < 0 || percent > 100) return -3;
+
+        boolean found = false;
+        for(MerchantStock m: merchantStockService.merchantStocks){
+            if(m.getMerchantId().equalsIgnoreCase(merchantId)){
+                int productIndex = productService.findProductIndex(m.getProductId());
+                if(productIndex == -1) continue;
+                Product product = productService.products.get(productIndex);
+                double newPrice = product.getPrice() * (1 - percent / 100);
+                product.setPrice(newPrice);
+                found = true;
+            }
+        }
+        return found ? 1 : -4;
+    }
+
 
     //HELPER METHODS
     public int findUserIndex(String id){
@@ -193,5 +238,14 @@ public class UserService {
             if(users.get(i).getId().equalsIgnoreCase(id))
                 return i;
         return -1;
+    }
+
+    private int validateItem(String productId, String merchantId){
+        if(productService.findProductIndex(productId) == -1) return 0; //check product
+        if(merchantService.findMerchantIndex(merchantId) == -1) return 1; //check merchant
+        int merchantStockIndex = merchantStockService.findByProductAndMerchantId(productId, merchantId);
+        if(merchantStockIndex == -1) return 2; //check merchant stock
+        if(merchantStockService.merchantStocks.get(merchantStockIndex).getStock() < 1) return 3; //check stock
+        return 5;
     }
 }
